@@ -4,8 +4,11 @@ from __future__ import division
 from keras.layers import *
 from keras import backend as K
 import numpy as np
+
+
 def relu6(x):
     return K.relu(x, max_value=6)
+
 
 class DepthwiseConv2D(Conv2D):
     def __init__(self,
@@ -133,6 +136,7 @@ class DepthwiseConv2D(Conv2D):
         config['depthwise_constraint'] = constraints.serialize(self.depthwise_constraint)
         return config
 
+
 def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1), trainable=False):
     """Adds an initial convolution layer (with batch normalization and relu6).
 
@@ -189,6 +193,7 @@ def _conv_block(inputs, filters, alpha, kernel=(3, 3), strides=(1, 1), trainable
                trainable=trainable)(inputs)
     x = BatchNormalization(axis=channel_axis, name='conv1_bn')(x)
     return Activation(relu6, name='conv1_relu')(x)
+
 
 def _depthwise_conv_block(inputs, pointwise_conv_filters, alpha,
                           depth_multiplier=1, strides=(1, 1), block_id=1, trainable=False):
@@ -261,18 +266,19 @@ def _depthwise_conv_block(inputs, pointwise_conv_filters, alpha,
     x = BatchNormalization(axis=channel_axis, name='conv_pw_%d_bn' % block_id)(x)
     return Activation(relu6, name='conv_pw_%d_relu' % block_id)(x)
 
+
 # Original MobileNet from paper.
-def nn_base(img_input=None, alpha=1.0, depth_multiplier=1,  trainable=True):
+def nn_base(img_input=None, alpha=1.0, depth_multiplier=1, trainable=True):
     x = _conv_block(img_input, 32, alpha, strides=(2, 2), trainable=False)
     x = _depthwise_conv_block(x, 64, alpha, depth_multiplier, block_id=1, trainable=False)
 
     x = _depthwise_conv_block(x, 128, alpha, depth_multiplier,
                               strides=(2, 2), block_id=2, trainable=trainable)
-    x = _depthwise_conv_block(x, 128, alpha, depth_multiplier, block_id=3,trainable=trainable)
+    x = _depthwise_conv_block(x, 128, alpha, depth_multiplier, block_id=3, trainable=trainable)
 
     x = _depthwise_conv_block(x, 256, alpha, depth_multiplier,
                               strides=(2, 2), block_id=4, trainable=trainable)
-    stage3 = _depthwise_conv_block(x, 256, alpha, depth_multiplier, block_id=5,trainable=trainable)
+    stage3 = _depthwise_conv_block(x, 256, alpha, depth_multiplier, block_id=5, trainable=trainable)
     # print('stage3:', stage3._keras_shape[1:])
 
     x = _depthwise_conv_block(stage3, 512, alpha, depth_multiplier,

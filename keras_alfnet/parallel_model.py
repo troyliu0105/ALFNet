@@ -75,7 +75,7 @@ class ParallelModel(KM.Model):
                                         self.inner_model.inputs)
                     inputs = [
                         KL.Lambda(lambda s: input_slices[name][i],
-                                  output_shape=lambda s: (None,)+s[1:])(tensor)
+                                  output_shape=lambda s: (None,) + s[1:])(tensor)
                         for name, tensor in zipped_inputs]
                     # Create the model replica and get the outputs
                     outputs = self.inner_model(inputs)
@@ -95,6 +95,7 @@ class ParallelModel(KM.Model):
                     if K.int_shape(tensor) == ():
                         return KL.Lambda(lambda t: K.reshape(t, [1, 1]))(tensor)
                     return tensor
+
                 outputs = list(map(add_dim, outputs))
 
                 # Concatenate
@@ -123,6 +124,7 @@ if __name__ == "__main__":
     # Directory to save logs and trained model
     MODEL_DIR = os.path.join(ROOT_DIR, "logs/parallel")
 
+
     def build_model(x_train, num_classes):
         # Reset default graph. Keras leaves old ops in the graph,
         # which are ignored for execution but clutter graph
@@ -140,6 +142,7 @@ if __name__ == "__main__":
         x = KL.Dense(num_classes, activation='softmax', name="dense2")(x)
 
         return KM.Model(inputs, x, "digit_classifier_model")
+
 
     # Load MNIST Data
     (x_train, y_train), (x_test, y_test) = mnist.load_data()

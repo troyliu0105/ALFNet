@@ -11,7 +11,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 w_path = 'data/models/city_res50_2step.hdf5'
 data_path = 'data/examples/'
 val_data = os.listdir(data_path)
-out_path = os.path.join(data_path,'detections')
+out_path = os.path.join(data_path, 'detections')
 if not os.path.exists(out_path):
     os.makedirs(out_path)
 

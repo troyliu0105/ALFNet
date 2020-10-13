@@ -21,10 +21,10 @@ C.init_lr = 1e-4
 C.alpha = 0.999  # update rate of weight moving average
 
 # define the path for loading the initialized weight files
-if C.network=='resnet50':
+if C.network == 'resnet50':
     weight_path = 'data/models/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5'
     # weight_path = 'output/valmodels/resnet50/2step/0.0001/resnet_e54_l0.0845779655501.hdf5'
-elif C.network=='mobilenet':
+elif C.network == 'mobilenet':
     weight_path = 'data/models/mobilenet_1_0_224_tf_no_top.h5'
 else:
     raise NotImplementedError('Not support network: {}'.format(C.network))
@@ -46,7 +46,8 @@ print 'num of training samples: {}'.format(num_imgs_train)
 C.neg_overlap_step2 = 0.5
 C.pos_overlap_step2 = 0.7
 from keras_alfnet.model.model_2step import Model_2step
+
 model = Model_2step()
 model.initialize(C)
-model.creat_model(C, train_data, phase = 'train',wei_mov_ave=True)
+model.creat_model(C, train_data, phase='train', wei_mov_ave=True)
 model.train_model_wma(C, weight_path, out_path)

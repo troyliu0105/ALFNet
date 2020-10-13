@@ -12,4 +12,3 @@
 #         raise NotImplementedError('Not implement {} or more steps'.format(opt.steps))
 #     model.initialize(opt)
 #     print ('model {} was created'.format(model.name()))
-
